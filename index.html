@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Kisan Saathi - Complete Multi-Language Farmer Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #0a2f1f 0%, #1a5c3a 50%, #0d3d26 100%);
+            overflow-x: hidden;
+        }
+
+        .falling-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .falling-item {
+            position: absolute;
+            color: rgba(255, 215, 0, 0.6);
+            font-size: 1.5rem;
+            animation: fall linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .app-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 2rem;
+            padding: 2rem;
+            max-width: 450px;
+            width: 90%;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px) scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header i {
+            font-size: 3rem;
+            color: #2b7a4b;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e5d8;
+            border-radius: 1rem;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            border-color: #2b7a4b;
+            outline: none;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            padding: 0.8rem;
+            border: none;
+            border-radius: 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            flex: 1;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2b7a4b, #1f5e3a);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e0e5d8;
+            color: #333;
+        }
+
+        /* User Bar */
+        .user-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .logout-btn,
+        .admin-btn {
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .logout-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+        .admin-btn {
+            background: #2563eb;
+            color: white;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1f5e3a, #2b7a4b);
+            border-radius: 2rem;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            color: white;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            margin: 0 0.2rem;
+            transition: all 0.3s;
+        }
+
+        .lang-btn:hover,
+        .lang-btn.active {
+            background: #ffc107;
+            color: #1f5e3a;
+            transform: scale(1.05);
+        }
+
+        /* Tabs */
+        .main-tabs,
+        .season-tabs,
+        .equipment-tabs {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .main-tab,
+        .season-btn,
+        .equipment-btn {
+            background: white;
+            border: 2px solid #2b7a4b;
+            padding: 10px 22px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #1f5e3a;
+            transition: all 0.3s;
+        }
+
+        .main-tab:hover,
+        .season-btn:hover,
+        .equipment-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .main-tab.active,
+        .season-btn.active,
+        .equipment-btn.active {
+            background: linear-gradient(135deg, #2b7a4b, #1f5e3a);
+            color: white;
+        }
+
+        /* Cards */
+        .quick-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 1.5rem;
+            padding: 1.2rem;
+            flex: 1 1 160px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card i {
+            font-size: 2rem;
+            color: #2b7a4b;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            background: white;
+        }
+
+        /* Panels */
+        .panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 1.8rem;
+            padding: 1.8rem;
+            margin-bottom: 1.8rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .panel:hover {
+            transform: translateY(-3px);
+        }
+
+        .panel h2 {
+            font-size: 1.3rem;
+            border-left: 5px solid #2b7a4b;
+            padding-left: 1rem;
+            margin-bottom: 1rem;
+            color: #1f5e3a;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            border-radius: 1rem;
+            border: 2px solid #e0e5d8;
+            font-family: inherit;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #2b7a4b;
+            outline: none;
+        }
+
+        button {
+            background: linear-gradient(135deg, #2b7a4b, #1f5e3a);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0.3rem;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        .response-box {
+            background: linear-gradient(135deg, #fef9e6, #fffef5);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-left: 4px solid #ffb347;
+            line-height: 1.6;
+            min-height: 120px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: linear-gradient(135deg, #2b7a4b, #1f5e3a);
+            color: white;
+        }
+
+        tr:hover {
+            background: #fef9e6;
+        }
+
+        .tip-box {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .question-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 0.8rem;
+        }
+
+        .chip {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+            border: 1px solid #2b7a4b;
+            transition: all 0.3s;
+        }
+
+        .chip:hover {
+            background: #2b7a4b;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 0.8rem;
+        }
+
+        .link-card {
+            background: white;
+            padding: 0.8rem;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            text-decoration: none;
+            color: #1f5e3a;
+            border: 1px solid #ddd;
+            transition: all 0.3s;
+        }
+
+        .link-card:hover {
+            transform: translateX(5px);
+            border-color: #2b7a4b;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .admin-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 1.8rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1f5e3a, #2b7a4b);
+            color: white;
+            padding: 1rem;
+            border-radius: 1rem;
+            text-align: center;
+        }
+
+        .delete-user {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 0.2rem 0.6rem;
+            border-radius: 1rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="falling-bg" id="fallingBg"></div>
+
+    <div class="app-wrapper">
+        <!-- Login Modal -->
+        <div id="authModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header"><i class="fas fa-tractor"></i>
+                    <h2 id="welcomeTitle">Welcome to Kisan Saathi</h2>
+                    <p id="welcomeSubtitle">Login to access farmer services</p>
+                </div>
+                <div id="loginForm">
+                    <div class="form-group"><label id="emailLabel">Email / Mobile</label><input type="text"
+                            id="loginEmail" placeholder="Enter email or mobile"></div>
+                    <div class="form-group"><label id="passwordLabel">Password</label><input type="password"
+                            id="loginPassword" placeholder="Enter password"></div>
+                    <div class="modal-buttons"><button class="btn-primary" onclick="handleLogin()"
+                            id="loginBtnText">Login</button><button class="btn-secondary" onclick="showRegister()"
+                            id="registerBtnText">New User? Register</button></div>
+                </div>
+                <div id="registerForm" style="display:none;">
+                    <div class="form-group"><label id="regNameLabel">Full Name</label><input type="text" id="regName"
+                            placeholder="Enter full name"></div>
+                    <div class="form-group"><label id="regEmailLabel">Email ID</label><input type="email" id="regEmail"
+                            placeholder="Enter email"></div>
+                    <div class="form-group"><label id="regMobileLabel">Mobile Number</label><input type="tel"
+                            id="regMobile" placeholder="10 digit mobile"></div>
+                    <div class="form-group"><label id="regLocationLabel">District / State</label><input type="text"
+                            id="regLocation" placeholder="e.g., Mysore, Karnataka"></div>
+                    <div class="form-group"><label id="regPasswordLabel">Password</label><input type="password"
+                            id="regPassword" placeholder="Create password (min 6 chars)"></div>
+                    <div class="modal-buttons"><button class="btn-primary" onclick="handleRegister()"
+                            id="registerBtnText2">Register</button><button class="btn-secondary" onclick="showLogin()"
+                            id="backLoginText">Back to Login</button></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="mainContent" class="main-content">
+            <div class="user-bar">
+                <div class="user-info"><i class="fas fa-user-circle"></i><span id="userNameDisplay">Farmer</span><span
+                        id="userRoleBadge"
+                        style="background:#e9c46a; padding:2px 8px; border-radius:20px;">Farmer</span></div>
+                <button class="admin-btn" id="adminBtn" onclick="showAdminPanel()" style="display:none;"><i
+                        class="fas fa-user-shield"></i> <span id="adminPanelText">Admin Panel</span></button>
+                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span
+                        id="logoutText">Logout</span></button>
+            </div>
+
+            <div class="header">
+                <div>
+                    <h1 id="appTitle">🌾 Kisan Saathi</h1>
+                    <p id="appSubtitle">Indian Farmer's Smart Assistant</p>
+                </div>
+                <div>
+                    <button class="lang-btn active" onclick="setLanguage('en')">English</button>
+                    <button class="lang-btn" onclick="setLanguage('hi')">हिंदी</button>
+                    <button class="lang-btn" onclick="setLanguage('kn')">ಕನ್ನಡ</button>
+                    <button class="lang-btn" onclick="setLanguage('ta')">தமிழ்</button>
+                </div>
+            </div>
+
+            <!-- Admin Panel -->
+            <div id="adminPanelSection" style="display:none;">
+                <div class="admin-panel">
+                    <h2 id="adminDashboardTitle">Admin Dashboard</h2>
+                    <div class="admin-stats" id="adminStats"></div>
+                    <div class="user-table">
+                        <h3 id="registeredFarmersTitle">Registered Farmers</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th id="idCol">ID</th>
+                                    <th id="nameCol">Name</th>
+                                    <th id="emailCol">Email</th>
+                                    <th id="mobileCol">Mobile</th>
+                                    <th id="locationCol">Location</th>
+                                    <th id="actionCol">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Farmer Content -->
+            <div id="farmerContent">
+                <div class="main-tabs">
+                    <button class="main-tab active" onclick="showMainTab('crops')"><i class="fas fa-seedling"></i> <span
+                            id="tabCrops">Crops & Seasons</span></button>
+                    <button class="main-tab" onclick="showMainTab('equipment')"><i class="fas fa-tractor"></i> <span
+                            id="tabEquip">Farm Equipment</span></button>
+                    <button class="main-tab" onclick="showMainTab('schemes')"><i class="fas fa-file-invoice-dollar"></i>
+                        <span id="tabSchemes">Schemes & Loans</span></button>
+                </div>
+
+                <div class="quick-grid">
+                    <div class="card" onclick="quickAnswer('crop')"><i class="fas fa-seedling"></i>
+                        <h3 id="cardCrop">Crop Guide</h3><small id="cardCropSub">All seasons</small>
+                    </div>
+                    <div class="card" onclick="quickAnswer('equipment')"><i class="fas fa-tractor"></i>
+                        <h3 id="cardEquip">Equipment</h3><small id="cardEquipSub">JCB, Tractors</small>
+                    </div>
+                    <div class="card" onclick="quickAnswer('scheme')"><i class="fas fa-file-invoice-dollar"></i>
+                        <h3 id="cardScheme">Govt Schemes</h3><small id="cardSchemeSub">PM-KISAN</small>
+                    </div>
+                    <div class="card" onclick="quickAnswer('loan')"><i class="fas fa-rupee-sign"></i>
+                        <h3 id="cardLoan">Agri Loans</h3><small id="cardLoanSub">KCC 4-7%</small>
+                    </div>
+                    <div class="card" onclick="quickAnswer('mandi')"><i class="fas fa-chart-line"></i>
+                        <h3 id="cardMandi">Market Prices</h3><small id="cardMandiSub">Mandi rates</small>
+                    </div>
+                </div>
+
+                <!-- Ask Section -->
+                <div class="panel">
+                    <h2><i class="fas fa-comments"></i> <span id="askTitle">Ask Kisan Saathi</span></h2>
+                    <div class="question-chips" id="questionChips"></div>
+                    <input type="text" id="userLocation" placeholder="📍 Your district / state">
+                    <textarea id="userQuestion" rows="3" placeholder="Type your question here..."></textarea>
+                    <button onclick="getAnswer()"><i class="fas fa-paper-plane"></i> <span id="getAnswerBtn">Get
+                            Answer</span></button>
+                    <button onclick="clearAll()" style="background:#bc6c25;"><i class="fas fa-eraser"></i> <span
+                            id="clearBtn">Clear</span></button>
+                    <div id="answerBox" class="response-box">💡 Click on ANY crop, season, equipment, or card above -
+                        answer appears instantly!</div>
+                </div>
+
+                <!-- Direct Links -->
+                <div class="panel" style="background: linear-gradient(135deg, #e8f5e9, #f1f8e9);">
+                    <h2>🔗 <span id="directLinksTitle">Direct Official Links</span></h2>
+                    <div class="links-grid">
+                        <a href="https://pmkisan.gov.in" target="_blank" class="link-card"><i
+                                class="fas fa-file-invoice-dollar"></i>
+                            <div>
+                                <h4>PM-KISAN</h4>
+                                <p>₹6000/year scheme</p>
+                            </div><i class="fas fa-external-link-alt"></i>
+                        </a>
+                        <a href="https://www.nabard.org" target="_blank" class="link-card"><i
+                                class="fas fa-university"></i>
+                            <div>
+                                <h4>NABARD</h4>
+                                <p>KCC & Agri Loans</p>
+                            </div><i class="fas fa-external-link-alt"></i>
+                        </a>
+                        <a href="https://pmfby.gov.in" target="_blank" class="link-card"><i
+                                class="fas fa-shield-alt"></i>
+                            <div>
+                                <h4>PMFBY</h4>
+                                <p>Crop Insurance</p>
+                            </div><i class="fas fa-external-link-alt"></i>
+                        </a>
+                        <a href="https://www.enam.gov.in" target="_blank" class="link-card"><i
+                                class="fas fa-chart-line"></i>
+                            <div>
+                                <h4>eNAM</h4>
+                                <p>Mandi Rates</p>
+                            </div><i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Crops Section -->
+                <div id="cropsSection">
+                    <div class="season-tabs">
+                        <button class="season-btn" onclick="showSeasonAnswer('rabi')">🌾 <span id="rabiName">Rabi</span>
+                            <small id="rabiMonths">(Oct-Mar)</small></button>
+                        <button class="season-btn" onclick="showSeasonAnswer('kharif')">🌱 <span
+                                id="kharifName">Kharif</span> <small id="kharifMonths">(Jun-Sep)</small></button>
+                        <button class="season-btn" onclick="showSeasonAnswer('zaid')">🌻 <span id="zaidName">Zaid</span>
+                            <small id="zaidMonths">(Apr-Jun)</small></button>
+                        <button class="season-btn active" onclick="showSeasonAnswer('summer')">☀️ <span
+                                id="summerName">Summer</span> <small id="summerMonths">(Mar-Jun)</small></button>
+                    </div>
+                    <div class="panel">
+                        <h2>🌾 <span id="cropsPanelTitle">Crop Guide</span></h2>
+                        <div id="seasonCrops"></div>
+                    </div>
+                </div>
+
+                <!-- Equipment Section -->
+                <div id="equipmentSection" style="display:none;">
+                    <div class="equipment-tabs">
+                        <button class="equipment-btn active" onclick="showEquipmentAnswer('tractor')">🚜 <span
+                                id="equipTractor">Tractors</span></button>
+                        <button class="equipment-btn" onclick="showEquipmentAnswer('jcb')">🏗️ <span
+                                id="equipJCB">JCB</span></button>
+                        <button class="equipment-btn" onclick="showEquipmentAnswer('harvester')">🌾 <span
+                                id="equipHarvester">Harvesters</span></button>
+                    </div>
+                    <div class="panel">
+                        <h2>🚜 <span id="equipPanelTitle">Farm Equipment</span></h2>
+                        <div id="equipmentContent"></div>
+                    </div>
+                </div>
+
+                <!-- Schemes Section -->
+                <div id="schemesSection" style="display:none;">
+                    <div class="panel">
+                        <h2>📋 <span id="schemesPanelTitle">Government Schemes</span></h2>
+                        <div id="schemesContent"></div>
+                    </div>
+                </div>
+
+                <!-- Mandi Rates -->
+                <div class="panel">
+                    <h2>📊 <span id="mandiTitle">Mandi Rates</span></h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th id="mandiCrop">Crop</th>
+                                <th id="mandiState">State</th>
+                                <th id="mandiPrice">Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>🌾 <span id="wheatName">Wheat</span></td>
+                                <td>Punjab</td>
+                                <td>₹2250/q</td>
+                            </tr>
+                            <tr>
+                                <td>🌾 <span id="paddyName">Paddy</span></td>
+                                <td>Haryana</td>
+                                <td>₹2180/q</td>
+                            </tr>
+                            <tr>
+                                <td>🌽 <span id="maizeName">Maize</span></td>
+                                <td>Karnataka</td>
+                                <td>₹2120/q</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="tip-box">📞 Kisan Call Centre: 1800-180-1551 | <a href="https://www.enam.gov.in"
+                            target="_blank">Check live rates on eNAM →</a></div>
+                </div>
+            </div>
+            <footer>🌾 Kisan Saathi - Empowering Indian Farmers | Made with ❤️ for Bharat</footer>
+        </div>
+    </div>
+
+    <script>
+        // Create Falling Background
+        function createFallingItems() {
+            const items = ['🌾', '🌱', '🌻', '🍃', '🌸', '🌿', '🍂', '⭐', '✨', '🌽', '🍅', '🥬'];
+            const container = document.getElementById('fallingBg');
+            for (let i = 0; i < 50; i++) {
+                const item = document.createElement('div');
+                item.className = 'falling-item';
+                item.innerHTML = items[Math.floor(Math.random() * items.length)];
+                item.style.left = Math.random() * 100 + '%';
+                item.style.animationDuration = 8 + Math.random() * 12 + 's';
+                item.style.animationDelay = Math.random() * 15 + 's';
+                item.style.fontSize = 1 + Math.random() * 2 + 'rem';
+                item.style.opacity = 0.4 + Math.random() * 0.5;
+                container.appendChild(item);
+            }
+        }
+
+        // COMPLETE MULTI-LANGUAGE DATABASE WITH ANSWERS
+        const translations = {
+            en: {
+                // UI Text
+                welcomeTitle: "Welcome to Kisan Saathi", welcomeSubtitle: "Login to access farmer services",
+                emailLabel: "Email / Mobile", passwordLabel: "Password", loginBtnText: "Login", registerBtnText: "New User? Register",
+                regNameLabel: "Full Name", regEmailLabel: "Email ID", regMobileLabel: "Mobile Number", regLocationLabel: "District / State", regPasswordLabel: "Password",
+                registerBtnText2: "Register", backLoginText: "Back to Login", adminPanelText: "Admin Panel", logoutText: "Logout",
+                appTitle: "🌾 Kisan Saathi", appSubtitle: "Indian Farmer's Smart Assistant",
+                tabCrops: "Crops & Seasons", tabEquip: "Farm Equipment", tabSchemes: "Schemes & Loans",
+                cardCrop: "Crop Guide", cardCropSub: "All seasons", cardEquip: "Equipment", cardEquipSub: "JCB, Tractors",
+                cardScheme: "Govt Schemes", cardSchemeSub: "PM-KISAN", cardLoan: "Agri Loans", cardLoanSub: "KCC 4-7%",
+                cardMandi: "Market Prices", cardMandiSub: "Mandi rates",
+                askTitle: "Ask Kisan Saathi", getAnswerBtn: "Get Answer", clearBtn: "Clear",
+                rabiName: "Rabi", rabiMonths: "(Oct-Mar)", kharifName: "Kharif", kharifMonths: "(Jun-Sep)",
+                zaidName: "Zaid", zaidMonths: "(Apr-Jun)", summerName: "Summer", summerMonths: "(Mar-Jun)",
+                cropsPanelTitle: "Crop Guide", equipPanelTitle: "Farm Equipment", schemesPanelTitle: "Government Schemes",
+                mandiTitle: "Mandi Rates", mandiCrop: "Crop", mandiState: "State", mandiPrice: "Price",
+                wheatName: "Wheat", paddyName: "Paddy", maizeName: "Maize", directLinksTitle: "Direct Official Links",
+                equipTractor: "Tractors", equipJCB: "JCB", equipHarvester: "Harvesters",
+                adminDashboardTitle: "Admin Dashboard", registeredFarmersTitle: "Registered Farmers",
+                idCol: "ID", nameCol: "Name", emailCol: "Email", mobileCol: "Mobile", locationCol: "Location", actionCol: "Action",
+
+                // ANSWERS in English
+                rabiAnswer: "🌾 RABI SEASON (Winter - Oct to Mar)\n\n• Best Crops: Wheat, Mustard, Gram, Barley, Lentil\n• Soil: Loamy, clay loam for wheat\n• Fertilizer: Wheat needs 120:60:40 NPK per acre\n• Yield: Wheat 45-50 quintals per acre\n• Irrigation: Every 20-25 days\n• Sowing Time: October-November\n• Harvest: March-April\n\n💡 Tip: First irrigation is most important after sowing!",
+                kharifAnswer: "🌱 KHARIF SEASON (Monsoon - Jun to Sep)\n\n• Best Crops: Rice (Paddy), Maize, Cotton, Soybean, Groundnut\n• Soil: Rice needs clay loam, Maize needs well-drained soil\n• Fertilizer: Rice 120:60:40 NPK, Maize 80:40:40 NPK\n• Yield: Rice 35-40 q/acre, Maize 25-30 q/acre\n• Sowing: With first monsoon rains (June)\n• Harvest: September-October\n\n💡 Tip: Use high-yield variety seeds for better production!",
+                zaidAnswer: "🌻 ZAID SEASON (Summer Crops - Apr to Jun)\n\n• Best Crops: Watermelon, Cucumber, Muskmelon, Bitter Gourd, Pumpkin\n• Soil: Sandy loam with good drainage\n• Fertilizer: 60:40:40 NPK for watermelons\n• Yield: Watermelon 200-250 q/acre\n• Irrigation: Every 5-7 days (frequent)\n• Temperature: 25-35°C ideal\n\n💡 Tip: Best for inter-cropping with vegetables!",
+                summerAnswer: "☀️ SUMMER SEASON (Mar to Jun)\n\n• Best Crops: Maize, Groundnut, Ragi (Finger Millet), Moong Bean, Sunflower\n• Soil: Loamy for maize, sandy loam for groundnut\n• Fertilizer: Maize 80:40:40 NPK, Groundnut 40:60:40 NPK\n• Yield: Maize 25-30 q/acre, Groundnut 15-20 q/acre\n• Water: Drip irrigation saves 50% water\n\n💡 Tip: Apply mulch to retain soil moisture!",
+                tractorAnswer: "🚜 TRACTORS - Rental & Subsidy Details\n\n• Mahindra 575 DI (47 HP): ₹400-500 per hour\n• Swaraj 744 FE (48 HP): ₹450-550 per hour\n• John Deere 5050D (50 HP): ₹500-600 per hour\n• New Price: ₹5.5 lakh to ₹8 lakh\n\n💰 SUBSIDY: 40-50% under SMAM scheme\n• Small & Marginal farmers eligible\n• Apply at District Agriculture Office\n• Documents: Land records, Aadhaar, bank account\n\n💡 Custom Hiring Centers available in every block!",
+                jcbAnswer: "🏗️ JCB & EARTHMOVING EQUIPMENT\n\n• JCB 3DX Backhoe Loader (74 HP): ₹800-1200 per hour\n• JCB 2DX (65 HP): ₹700-1000 per hour\n• CAT 424 (70 HP): ₹900-1300 per hour\n• New Price: ₹28-45 lakh\n\nUSES:\n• Pond digging\n• Land leveling\n• Road construction\n\n💰 Subsidy: 25-35% for SC/ST farmers",
+                harvesterAnswer: "🌾 COMBINE HARVESTERS\n\n• John Deere W70: ₹1800-2500 per acre\n• New Holland CS 6090: ₹1600-2200 per acre\n• Capacity: 5-8 acres per day\n• New Price: ₹16-22 lakh\n\n💡 TIPS:\n• Book 15-20 days before harvest season\n• Subsidy up to 50% for small farmers",
+                cropGuideAnswer: "🌾 COMPLETE CROP GUIDE\n\nRABI (Winter): Wheat, Mustard, Gram - Soil: Loamy, Yield: 45-50 q/acre\n\nKHARIF (Monsoon): Rice, Maize, Cotton - Soil: Clay loam, Yield: 35-40 q/acre\n\nZAID: Watermelon, Cucumber - Needs frequent irrigation\n\nSUMMER: Maize, Groundnut, Ragi - Use drip irrigation\n\n💡 Click on any season above for detailed information!",
+                equipmentGuideAnswer: "🚜 FARM EQUIPMENT GUIDE\n\nTRACTORS: Mahindra 575 DI: ₹400-500/hr, 40-50% subsidy\n\nJCB BACKHOE: JCB 3DX: ₹800-1200/hr\n\nHARVESTERS: ₹1800-2500 per acre\n\n💡 Click on equipment tabs above for details!",
+                schemeGuideAnswer: "📋 GOVERNMENT SCHEMES FOR FARMERS\n\n1. PM-KISAN: ₹6000/year in 3 installments\n   • Apply at: pmkisan.gov.in or CSC\n\n2. KCC LOAN: Up to ₹3 lakh at 4-7% interest\n   • Visit any nationalized bank\n\n3. SMAM: 40-50% subsidy on tractors\n\n4. PMFBY: Crop insurance - Premium only 1.5-2%",
+                loanGuideAnswer: "🏦 KISAN CREDIT CARD (KCC) LOAN\n\n• Interest Rate: 4% to 7% per year\n• Maximum Loan: Up to ₹3 lakh (without collateral)\n\nELIGIBILITY: All farmers\n\nDOCUMENTS: Land records, Aadhaar, bank account, photos\n\nHOW TO APPLY: Visit any nationalized bank",
+                mandiGuideAnswer: "📊 CURRENT MANDI RATES (Reference)\n\n• Wheat: ₹2250-2350 per quintal (Punjab, Haryana)\n• Paddy: ₹2180-2250 per quintal (Haryana)\n• Maize: ₹2100-2200 per quintal (Karnataka)\n• Groundnut: ₹5700-5900 per quintal (Gujarat)\n\nMSP 2024-25:\n• Wheat: ₹2275 per quintal\n• Paddy: ₹2180 per quintal\n\n💡 For live rates: Visit eNAM app",
+                chips: ["🚜 JCB rental?", "💰 Tractor subsidy?", "🌾 Best summer crop?", "📋 PM-KISAN?", "🏦 KCC loan?", "📊 Wheat price?"]
+            },
+            hi: {
+                welcomeTitle: "किसान साथी में आपका स्वागत है", welcomeSubtitle: "किसान सेवाओं तक पहुंचने के लिए लॉगिन करें",
+                emailLabel: "ईमेल / मोबाइल", passwordLabel: "पासवर्ड", loginBtnText: "लॉगिन", registerBtnText: "नए उपयोगकर्ता? रजिस्टर करें",
+                regNameLabel: "पूरा नाम", regEmailLabel: "ईमेल आईडी", regMobileLabel: "मोबाइल नंबर", regLocationLabel: "जिला / राज्य", regPasswordLabel: "पासवर्ड",
+                registerBtnText2: "रजिस्टर करें", backLoginText: "लॉगिन पर वापस जाएं", adminPanelText: "एडमिन पैनल", logoutText: "लॉगआउट",
+                appTitle: "🌾 किसान साथी", appSubtitle: "भारतीय किसानों का स्मार्ट साथी",
+                tabCrops: "फसलें और मौसम", tabEquip: "कृषि उपकरण", tabSchemes: "योजनाएं और ऋण",
+                cardCrop: "फसल गाइड", cardCropSub: "सभी मौसम", cardEquip: "उपकरण", cardEquipSub: "JCB, ट्रैक्टर",
+                cardScheme: "सरकारी योजनाएं", cardSchemeSub: "पीएम-किसान", cardLoan: "कृषि ऋण", cardLoanSub: "केसीसी 4-7%",
+                cardMandi: "मंडी भाव", cardMandiSub: "मंडी दरें",
+                askTitle: "किसान साथी से पूछें", getAnswerBtn: "जवाब पाएं", clearBtn: "साफ करें",
+                rabiName: "रबी", rabiMonths: "(अक्टू-मार्च)", kharifName: "खरीफ", kharifMonths: "(जून-सितं)", zaidName: "जायद", zaidMonths: "(अप्रैल-जून)", summerName: "ग्रीष्म", summerMonths: "(मार्च-जून)",
+                cropsPanelTitle: "फसल गाइड", equipPanelTitle: "कृषि उपकरण", schemesPanelTitle: "सरकारी योजनाएं",
+                mandiTitle: "मंडी भाव", mandiCrop: "फसल", mandiState: "राज्य", mandiPrice: "मूल्य",
+                wheatName: "गेहूं", paddyName: "धान", maizeName: "मक्का", directLinksTitle: "सीधे आधिकारिक लिंक",
+                equipTractor: "ट्रैक्टर", equipJCB: "JCB", equipHarvester: "हार्वेस्टर",
+                adminDashboardTitle: "एडमिन डैशबोर्ड", registeredFarmersTitle: "पंजीकृत किसान",
+                idCol: "आईडी", nameCol: "नाम", emailCol: "ईमेल", mobileCol: "मोबाइल", locationCol: "स्थान", actionCol: "कार्रवाई",
+
+                rabiAnswer: "🌾 रबी सीजन (सर्दी - अक्टूबर से मार्च)\n\n• मुख्य फसलें: गेहूं, सरसों, चना, जौ, मसूर\n• मिट्टी: दोमट, गेहूं के लिए चिकनी दोमट\n• उर्वरक: गेहूं के लिए 120:60:40 NPK प्रति एकड़\n• उपज: गेहूं 45-50 क्विंटल प्रति एकड़\n• सिंचाई: हर 20-25 दिन में\n• बुवाई का समय: अक्टूबर-नवंबर\n\n💡 टिप: बुवाई के बाद पहली सिंचाई सबसे महत्वपूर्ण है!",
+                kharifAnswer: "🌱 खरीफ सीजन (बरसात - जून से सितंबर)\n\n• मुख्य फसलें: धान, मक्का, कपास, सोयाबीन, मूंगफली\n• मिट्टी: धान के लिए चिकनी दोमट, मक्का के लिए जल निकास वाली\n• उर्वरक: धान 120:60:40 NPK, मक्का 80:40:40 NPK\n• उपज: धान 35-40 क्विंटल/एकड़, मक्का 25-30 क्विंटल/एकड़\n• बुवाई: पहली बारिश के साथ (जून)\n\n💡 टिप: अधिक उपज के लिए उन्नत किस्म के बीजों का उपयोग करें!",
+                zaidAnswer: "🌻 जायद सीजन (अप्रैल से जून)\n\n• मुख्य फसलें: तरबूज, खीरा, खरबूजा, करेला, कद्दू\n• मिट्टी: बलुई दोमट\n• उर्वरक: तरबूज के लिए 60:40:40 NPK\n• उपज: तरबूज 200-250 क्विंटल/एकड़\n• सिंचाई: हर 5-7 दिन में\n\n💡 टिप: सब्जियों के साथ अंतर-फसल के लिए सर्वोत्तम!",
+                summerAnswer: "☀️ ग्रीष्म सीजन (मार्च से जून)\n\n• मुख्य फसलें: मक्का, मूंगफली, रागी, मूंग, सूरजमुखी\n• मिट्टी: मक्का के लिए दोमट, मूंगफली के लिए बलुई दोमट\n• उर्वरक: मक्का 80:40:40 NPK, मूंगफली 40:60:40 NPK\n• उपज: मक्का 25-30 क्विंटल/एकड़, मूंगफली 15-20 क्विंटल/एकड़\n\n💡 टिप: पानी बचाने के लिए ड्रिप सिंचाई का उपयोग करें!",
+                tractorAnswer: "🚜 ट्रैक्टर - किराया और सब्सिडी विवरण\n\n• महिंद्रा 575 DI (47 HP): ₹400-500 प्रति घंटा\n• स्वराज 744 FE (48 HP): ₹450-550 प्रति घंटा\n• जॉन डियर 5050D (50 HP): ₹500-600 प्रति घंटा\n\n💰 सब्सिडी: SMAM योजना के तहत 40-50%\n• छोटे और सीमांत किसान पात्र\n• आवेदन: जिला कृषि कार्यालय में\n\n💡 हर ब्लॉक में कस्टम हायरिंग सेंटर उपलब्ध!",
+                jcbAnswer: "🏗️ JCB और अर्थमूविंग उपकरण\n\n• JCB 3DX (74 HP): ₹800-1200 प्रति घंटा\n• JCB 2DX (65 HP): ₹700-1000 प्रति घंटा\n\nउपयोग:\n• तालाब खोदना\n• भूमि समतलीकरण\n• सड़क निर्माण\n\n💰 सब्सिडी: SC/ST किसानों के लिए 25-35%",
+                harvesterAnswer: "🌾 कंबाइन हार्वेस्टर\n\n• जॉन डियर W70: ₹1800-2500 प्रति एकड़\n• न्यू हॉलैंड: ₹1600-2200 प्रति एकड़\n• क्षमता: 5-8 एकड़ प्रति दिन\n\n💡 टिप्स:\n• फसल से 15-20 दिन पहले बुक करें\n• छोटे किसानों के लिए 50% तक सब्सिडी",
+                cropGuideAnswer: "🌾 संपूर्ण फसल गाइड\n\nरबी (सर्दी): गेहूं, सरसों, चना - दोमट मिट्टी\n\nखरीफ (बरसात): धान, मक्का, कपास - चिकनी मिट्टी\n\nजायद: तरबूज, खीरा - बार-बार सिंचाई\n\nग्रीष्म: मक्का, मूंगफली, रागी - ड्रिप सिंचाई\n\n💡 विस्तृत जानकारी के लिए ऊपर सीजन पर क्लिक करें!",
+                equipmentGuideAnswer: "🚜 कृषि उपकरण गाइड\n\nट्रैक्टर: महिंद्रा 575 DI: ₹400-500/घंटा, 40-50% सब्सिडी\n\nJCB: JCB 3DX: ₹800-1200/घंटा\n\nहार्वेस्टर: ₹1800-2500 प्रति एकड़\n\n💡 विवरण के लिए उपकरण टैब पर क्लिक करें!",
+                schemeGuideAnswer: "📋 किसानों के लिए सरकारी योजनाएं\n\n1. पीएम-किसान: ₹6000/वर्ष तीन किस्तों में\n   • आवेदन: pmkisan.gov.in या CSC\n\n2. केसीसी ऋण: ₹3 लाख तक @4-7% ब्याज\n   • किसी भी राष्ट्रीयकृत बैंक में जाएं\n\n3. SMAM: ट्रैक्टर पर 40-50% सब्सिडी\n\n4. पीएमएफबीवाई: फसल बीमा - केवल 1.5-2% प्रीमियम",
+                loanGuideAnswer: "🏦 किसान क्रेडिट कार्ड (केसीसी) ऋण\n\n• ब्याज दर: 4% से 7% प्रति वर्ष\n• अधिकतम ऋण: ₹3 लाख (बिना गारंटी के)\n\nपात्रता: सभी किसान\n\nदस्तावेज: भूमि रिकॉर्ड, आधार, बैंक खाता, फोटो\n\nआवेदन: किसी भी राष्ट्रीयकृत बैंक में जाएं",
+                mandiGuideAnswer: "📊 वर्तमान मंडी भाव (संदर्भ)\n\n• गेहूं: ₹2250-2350 प्रति क्विंटल (पंजाब, हरियाणा)\n• धान: ₹2180-2250 प्रति क्विंटल (हरियाणा)\n• मक्का: ₹2100-2200 प्रति क्विंटल (कर्नाटक)\n\nएमएसपी 2024-25:\n• गेहूं: ₹2275 प्रति क्विंटल\n• धान: ₹2180 प्रति क्विंटल\n\n💡 लाइव दरों के लिए: eNAM ऐप देखें",
+                chips: ["🚜 JCB किराया?", "💰 ट्रैक्टर सब्सिडी?", "🌾 बेस्ट गर्मी फसल?", "📋 पीएम-किसान?", "🏦 केसीसी ऋण?", "📊 गेहूं मूल्य?"]
+            },
+            kn: {
+                appTitle: "🌾 ಕಿಸಾನ್ ಸಾಥಿ", appSubtitle: "ಭಾರತೀಯ ರೈತರ ಸ್ಮಾರ್ಟ್ ಸಹಾಯಕ",
+                tabCrops: "ಬೆಳೆಗಳು ಮತ್ತು ಋತುಗಳು", tabEquip: "ಕೃಷಿ ಉಪಕರಣಗಳು", tabSchemes: "ಯೋಜನೆಗಳು ಮತ್ತು ಸಾಲಗಳು",
+                cardCrop: "ಬೆಳೆ ಮಾರ್ಗದರ್ಶಿ", cardCropSub: "ಎಲ್ಲಾ ಋತುಗಳು", cardEquip: "ಉಪಕರಣಗಳು", cardEquipSub: "JCB, ಟ್ರ್ಯಾಕ್ಟರುಗಳು",
+                cardScheme: "ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು", cardSchemeSub: "ಪಿಎಂ-ಕಿಸಾನ್", cardLoan: "ಕೃಷಿ ಸಾಲಗಳು", cardLoanSub: "ಕೆಸಿಸಿ 4-7%",
+                cardMandi: "ಮಂಡಿ ದರಗಳು", cardMandiSub: "ಮಂಡಿ ಬೆಲೆಗಳು",
+                askTitle: "ಕಿಸಾನ್ ಸಾಥಿ ಕೇಳಿ", getAnswerBtn: "ಉತ್ತರ ಪಡೆಯಿರಿ", clearBtn: "ಸ್ಪಷ್ಟ",
+                rabiName: "ರಬಿ", rabiMonths: "(ಅಕ್ಟೂ-ಮಾರ್ಚ್)", kharifName: "ಖರೀಫ್", kharifMonths: "(ಜೂನ್-ಸೆಪ್ಟೆಂ)", zaidName: "ಜೈದ್", zaidMonths: "(ಏಪ್ರಿಲ್-ಜೂನ್)", summerName: "ಬೇಸಿಗೆ", summerMonths: "(ಮಾರ್ಚ್-ಜೂನ್)",
+                cropsPanelTitle: "ಬೆಳೆ ಮಾರ್ಗದರ್ಶಿ", equipPanelTitle: "ಕೃಷಿ ಉಪಕರಣಗಳು", schemesPanelTitle: "ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು",
+                mandiTitle: "ಮಂಡಿ ದರಗಳು", mandiCrop: "ಬೆಳೆ", mandiState: "ರಾಜ್ಯ", mandiPrice: "ಬೆಲೆ",
+                wheatName: "ಗೋಧಿ", paddyName: "ಭತ್ತ", maizeName: "ಮೆಕ್ಕೆಜೋಳ", directLinksTitle: "ನೇರ ಅಧಿಕೃತ ಲಿಂಕ್ಗಳು",
+                equipTractor: "ಟ್ರ್ಯಾಕ್ಟರುಗಳು", equipJCB: "JCB", equipHarvester: "ಹಾರ್ವೆಸ್ಟರ್ಗಳು",
+                rabiAnswer: "🌾 ರಬಿ ಕಾಲ (ಚಳಿಗಾಲ - ಅಕ್ಟೂಬರ್ ನಿಂದ ಮಾರ್ಚ್)\n\n• ಮುಖ್ಯ ಬೆಳೆಗಳು: ಗೋಧಿ, ಸಾಸಿವೆ, ಕಡಲೆ\n• ಮಣ್ಣು: ಗೋಧಿಗೆ ದೋಮಟ\n• ಗೊಬ್ಬರ: ಗೋಧಿಗೆ 120:60:40 NPK\n• ಇಳುವರಿ: ಗೋಧಿ 45-50 ಕ್ವಿಂಟಲ್/ಎಕರೆ\n\n💡 ಬಿತ್ತನೆಯ ನಂತರ ಮೊದಲ ನೀರಾವರಿ ಮುಖ್ಯ!",
+                kharifAnswer: "🌱 ಖರೀಫ್ ಕಾಲ (ಮಳೆಗಾಲ - ಜೂನ್ ನಿಂದ ಸೆಪ್ಟೆಂಬರ್)\n\n• ಮುಖ್ಯ ಬೆಳೆಗಳು: ಭತ್ತ, ಮೆಕ್ಕೆಜೋಳ, ಹತ್ತಿ\n• ಮಣ್ಣು: ಭತ್ತಕ್ಕೆ ಜೇಡಿಮಣ್ಣು\n• ಗೊಬ್ಬರ: ಭತ್ತಕ್ಕೆ 120:60:40 NPK\n• ಇಳುವರಿ: ಭತ್ತ 35-40 ಕ್ವಿಂಟಲ್/ಎಕರೆ\n\n💡 ಮೊದಲ ಮಳೆಯೊಂದಿಗೆ ಬಿತ್ತನೆ ಮಾಡಿ!",
+                summerAnswer: "☀️ ಬೇಸಿಗೆ ಕಾಲ (ಮಾರ್ಚ್ ನಿಂದ ಜೂನ್)\n\n• ಮುಖ್ಯ ಬೆಳೆಗಳು: ಮೆಕ್ಕೆಜೋಳ, ಕಡಲೆಕಾಯಿ, ರಾಗಿ\n• ಮಣ್ಣು: ಮೆಕ್ಕೆಜೋಳಕ್ಕೆ ದೋಮಟ\n• ಗೊಬ್ಬರ: ಮೆಕ್ಕೆಜೋಳ 80:40:40 NPK\n• ಇಳುವರಿ: ಮೆಕ್ಕೆಜೋಳ 25-30 ಕ್ವಿಂಟಲ್/ಎಕರೆ\n\n💡 ನೀರು ಉಳಿಸಲು ಹನಿ ನೀರಾವರಿ ಬಳಸಿ!",
+                tractorAnswer: "🚜 ಟ್ರ್ಯಾಕ್ಟರ್ಗಳು - ಬಾಡಿಗೆ ಮತ್ತು ಸಬ್ಸಿಡಿ\n\n• ಮಹೀಂದ್ರಾ 575 DI: ₹400-500/ಗಂಟೆ\n• ಸ್ವರಾಜ್ 744: ₹450-550/ಗಂಟೆ\n\n💰 ಸಬ್ಸಿಡಿ: SMAM ಯೋಜನೆಯಡಿ 40-50%\n• ಜಿಲ್ಲಾ ಕೃಷಿ ಕಚೇರಿಯಲ್ಲಿ ಅರ್ಜಿ ಸಲ್ಲಿಸಿ",
+                jcbAnswer: "🏗️ JCB ಬ್ಯಾಕ್ಹೋ ಲೋಡರ್\n\n• JCB 3DX (74 HP): ₹800-1200/ಗಂಟೆ\n• ಬಳಕೆ: ಕೊಳ ತೋಡುವುದು, ಭೂಮಿ ಮಟ್ಟಸಗೊಳಿಸುವುದು\n\n💰 ಸಬ್ಸಿಡಿ: SC/ST ರೈತರಿಗೆ 25-35%",
+                harvesterAnswer: "🌾 ಕಂಬೈನ್ ಹಾರ್ವೆಸ್ಟರ್ಗಳು\n\n• ಜಾನ್ ಡಿಯರ್ W70: ₹1800-2500/ಎಕರೆ\n• ಸಾಮರ್ಥ್ಯ: 5-8 ಎಕರೆ/ದಿನ\n\n💡 ಸುಗ್ಗಿಯ 15-20 ದಿನ ಮೊದಲು ಬುಕ್ ಮಾಡಿ",
+                schemeGuideAnswer: "📋 ರೈತರಿಗೆ ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು\n\n1. PM-ಕಿಸಾನ್: ₹6000/ವರ್ಷ\n2. ಕೆಸಿಸಿ ಸಾಲ: ₹3 ಲಕ್ಷ @4-7%\n3. SMAM: 40-50% ಸಬ್ಸಿಡಿ",
+                chips: ["🚜 JCB ಬಾಡಿಗೆ?", "💰 ಟ್ರ್ಯಾಕ್ಟರ್ ಸಬ್ಸಿಡಿ?", "🌾 ಬೇಸಿಗೆ ಬೆಳೆ?", "📋 PM-ಕಿಸಾನ್?", "🏦 ಕೆಸಿಸಿ ಸಾಲ?", "📊 ಗೋಧಿ ಬೆಲೆ?"]
+            },
+            ta: {
+                appTitle: "🌾 கிசான் சாதி", appSubtitle: "இந்திய விவசாயிகளின் ஸ்மார்ட் உதவியாளர்",
+                tabCrops: "பயிர்கள் மற்றும் பருவங்கள்", tabEquip: "பண்ணை உபகரணங்கள்", tabSchemes: "திட்டங்கள் மற்றும் கடன்கள்",
+                cardCrop: "பயிர் வழிகாட்டி", cardCropSub: "அனைத்து பருவங்கள்", cardEquip: "உபகரணங்கள்", cardEquipSub: "JCB, டிராக்டர்கள்",
+                cardScheme: "அரசு திட்டங்கள்", cardSchemeSub: "PM-கிசான்", cardLoan: "வேளாண் கடன்கள்", cardLoanSub: "KCC 4-7%",
+                cardMandi: "மண்டி விலைகள்", cardMandiSub: "மண்டி விலைகள்",
+                askTitle: "கிசான் சாதியிடம் கேளுங்கள்", getAnswerBtn: "பதிலைப் பெறுக", clearBtn: "அழி",
+                rabiName: "ராபி", rabiMonths: "(அக்டூ-மார்ச்)", kharifName: "கரீஃப்", kharifMonths: "(ஜூன்-செப்டெம்)", zaidName: "ஜைத்", zaidMonths: "(ஏப்ரல்-ஜூன்)", summerName: "கோடை", summerMonths: "(மார்ச்-ஜூன்)",
+                cropsPanelTitle: "பயிர் வழிகாட்டி", equipPanelTitle: "பண்ணை உபகரணங்கள்", schemesPanelTitle: "அரசு திட்டங்கள்",
+                mandiTitle: "மண்டி விலைகள்", mandiCrop: "பயிர்", mandiState: "மாநிலம்", mandiPrice: "விலை",
+                wheatName: "கோதுமை", paddyName: "நெல்", maizeName: "மக்காச்சோளம்", directLinksTitle: "நேரடி அதிகாரப்பூர்வ இணைப்புகள்",
+                equipTractor: "டிராக்டர்கள்", equipJCB: "JCB", equipHarvester: "அறுவடை இயந்திரங்கள்",
+                rabiAnswer: "🌾 ராபி பருவம் (குளிர்காலம் - அக்டூ-மார்ச்)\n\n• பயிர்கள்: கோதுமை, கடுகு, கிராம்\n• மண்: களிமண்\n• உரம்: கோதுமைக்கு 120:60:40 NPK\n• மகசூல்: கோதுமை 45-50 குவிண்டால்/ஏக்கர்\n\n💡 விதைத்த பின் முதல் பாசனம் மிக முக்கியம்!",
+                kharifAnswer: "🌱 கரீஃப் பருவம் (பருவமழை - ஜூன்-செப்டெம்)\n\n• பயிர்கள்: நெல், மக்காச்சோளம், பருத்தி\n• மண்: நெல்லுக்கு களிமண்\n• உரம்: நெல்லுக்கு 120:60:40 NPK\n• மகசூல்: நெல் 35-40 குவிண்டால்/ஏக்கர்\n\n💡 முதல் மழையுடன் விதைக்கவும்!",
+                summerAnswer: "☀️ கோடை பருவம் (மார்ச்-ஜூன்)\n\n• பயிர்கள்: மக்காச்சோளம், நிலக்கடலை, ராகி\n• மண்: மக்காச்சோளத்திற்கு களிமண்\n• உரம்: மக்காச்சோளம் 80:40:40 NPK\n• மகசூல்: மக்காச்சோளம் 25-30 குவிண்டால்/ஏக்கர்\n\n💡 நீர் சேமிக்க சொட்டு நீர்ப்பாசனம் பயன்படுத்தவும்!",
+                tractorAnswer: "🚜 டிராக்டர்கள் - வாடகை மற்றும் மானியம்\n\n• மஹிந்திரா 575 DI: ₹400-500/மணி\n• ஸ்வராஜ் 744: ₹450-550/மணி\n\n💰 மானியம்: SMAM திட்டத்தில் 40-50%\n• மாவட்ட வேளாண்மை அலுவலகத்தில் விண்ணப்பிக்கவும்",
+                jcbAnswer: "🏗️ JCB பேக்ஹோ ஏற்றி\n\n• JCB 3DX (74 HP): ₹800-1200/மணி\n• பயன்பாடுகள்: குளம் தோண்டுதல், நில மட்டமாக்குதல்\n\n💰 மானியம்: SC/ST விவசாயிகளுக்கு 25-35%",
+                harvesterAnswer: "🌾 கூட்டு அறுவடை இயந்திரங்கள்\n\n• ஜான் டியர் W70: ₹1800-2500/ஏக்கர்\n• திறன்: 5-8 ஏக்கர்/நாள்\n\n💡 அறுவடைக்கு 15-20 நாட்கள் முன்பு முன்பதிவு செய்யவும்",
+                schemeGuideAnswer: "📋 விவசாயிகளுக்கான அரசு திட்டங்கள்\n\n1. PM-கிசான்: ₹6000/ஆண்டு\n2. KCC கடன்: ₹3 லட்சம் @4-7%\n3. SMAM: 40-50% மானியம்",
+                chips: ["🚜 JCB வாடகை?", "💰 டிராக்டர் மானியம்?", "🌾 கோடை பயிர்?", "📋 PM-கிசான்?", "🏦 KCC கடன்?", "📊 கோதுமை விலை?"]
+            }
+        };
+
+        // Answer mapping
+        const answerKeys = {
+            rabi: 'rabiAnswer', kharif: 'kharifAnswer', zaid: 'zaidAnswer', summer: 'summerAnswer',
+            tractor: 'tractorAnswer', jcb: 'jcbAnswer', harvester: 'harvesterAnswer',
+            crop_guide: 'cropGuideAnswer', equipment_guide: 'equipmentGuideAnswer',
+            scheme_guide: 'schemeGuideAnswer', loan_guide: 'loanGuideAnswer', mandi_guide: 'mandiGuideAnswer'
+        };
+
+        // Crop & Equipment Display Data
+        const cropDatabase = {
+            rabi: { name: "🌾 Rabi Season (Winter) - Oct to Mar", crops: [{ n: "Wheat", s: "Loamy", f: "120:60:40 NPK", y: "45-50 q/acre" }, { n: "Mustard", s: "Sandy loam", f: "80:40:20 NPK", y: "12-15 q/acre" }, { n: "Gram", s: "Loamy", f: "20:50:20 NPK", y: "10-12 q/acre" }], tips: "💡 Irrigate every 20-25 days" },
+            kharif: { name: "🌱 Kharif Season (Monsoon) - Jun to Sep", crops: [{ n: "Rice", s: "Clay loam", f: "120:60:40 NPK", y: "35-40 q/acre" }, { n: "Maize", s: "Well-drained", f: "80:40:40 NPK", y: "25-30 q/acre" }, { n: "Cotton", s: "Black soil", f: "100:50:50 NPK", y: "5-7 q/acre" }], tips: "💡 Sow with first monsoon rains" },
+            zaid: { name: "🌻 Zaid Season - Apr to Jun", crops: [{ n: "Watermelon", s: "Sandy loam", f: "60:40:40 NPK", y: "200-250 q/acre" }, { n: "Cucumber", s: "Loamy", f: "50:30:30 NPK", y: "150-200 q/acre" }], tips: "💡 Requires frequent irrigation" },
+            summer: { name: "☀️ Summer Season - Mar to Jun", crops: [{ n: "Maize", s: "Loamy", f: "80:40:40 NPK", y: "25-30 q/acre" }, { n: "Groundnut", s: "Sandy loam", f: "40:60:40 NPK", y: "15-20 q/acre" }, { n: "Ragi", s: "Red loamy", f: "40:20:20 NPK", y: "12-15 q/acre" }], tips: "💡 Use drip irrigation" }
+        };
+
+        const equipmentDatabase = {
+            tractor: { name: "🚜 Tractors", equip: [{ n: "Mahindra 575 DI", s: "47 HP", p: "₹5.5-6.2 Lakh", r: "₹400-500/hr" }, { n: "Swaraj 744", s: "48 HP", p: "₹5.8-6.5 Lakh", r: "₹450-550/hr" }], tips: "💡 40-50% subsidy under SMAM" },
+            jcb: { name: "🏗️ JCB Backhoe", equip: [{ n: "JCB 3DX", s: "74 HP", p: "₹35-40 Lakh", r: "₹800-1200/hr" }], tips: "💡 Available through local contractors" },
+            harvester: { name: "🌾 Harvesters", equip: [{ n: "John Deere W70", s: "6-8 acres/day", p: "₹18-22 Lakh", r: "₹1800-2500/acre" }], tips: "💡 Book 15-20 days before harvest" }
+        };
+
+        let users = [], currentUser = null, currentLang = 'en', currentSeason = 'summer', currentEquipment = 'tractor', currentMainTab = 'crops';
+
+        function showAnswer(answerKey) {
+            const answer = translations[currentLang][answerKeys[answerKey]] || translations[currentLang][answerKey] || "Information available in selected language";
+            document.getElementById('answerBox').innerHTML = `<i class="fas fa-leaf" style="color:#2b7a4b;"></i> ${answer.replace(/\n/g, '<br>')}`;
+        }
+
+        function showSeasonAnswer(season) {
+            currentSeason = season;
+            document.querySelectorAll('.season-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            displaySeasonCrops();
+            showAnswer(season);
+        }
+
+        function showEquipmentAnswer(type) {
+            currentEquipment = type;
+            document.querySelectorAll('.equipment-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            displayEquipment();
+            showAnswer(type);
+        }
+
+        function quickAnswer(type) {
+            if (type === 'crop') showAnswer('crop_guide');
+            else if (type === 'equipment') showAnswer('equipment_guide');
+            else if (type === 'scheme') showAnswer('scheme_guide');
+            else if (type === 'loan') showAnswer('loan_guide');
+            else if (type === 'mandi') showAnswer('mandi_guide');
+            if (type === 'crop') showMainTab('crops');
+            else if (type === 'equipment') showMainTab('equipment');
+            else if (type === 'scheme') showMainTab('schemes');
+        }
+
+        function displaySeasonCrops() {
+            const data = cropDatabase[currentSeason];
+            let html = `<h3>${data.name}</h3><table><thead><tr><th>Crop</th><th>Soil</th><th>Fertilizer</th><th>Yield</th></tr></thead><tbody>`;
+            data.crops.forEach(c => { html += `<tr><td><strong>${c.n}</strong></td><td>${c.s}</td><td>${c.f}</td><td>${c.y}</td></tr>`; });
+            html += `</tbody></table><div class="tip-box">${data.tips}</div>`;
+            document.getElementById('seasonCrops').innerHTML = html;
+        }
+
+        function displayEquipment() {
+            const data = equipmentDatabase[currentEquipment];
+            let html = `<h3>${data.name}</h3><table><thead><tr><th>Model</th><th>Specs</th><th>Price</th><th>Rental</th></tr></thead><tbody>`;
+            data.equip.forEach(e => { html += `<tr><td><strong>${e.n}</strong></td><td>${e.s}</td><td>${e.p}</td><td>${e.r}</td></tr>`; });
+            html += `</tbody></table><div class="tip-box">${data.tips}</div>`;
+            document.getElementById('equipmentContent').innerHTML = html;
+        }
+
+        function showSchemes() {
+            document.getElementById('schemesContent').innerHTML = `<table><thead><tr><th>Scheme</th><th>Benefit</th><th>Apply</th></tr></thead><tbody>
+        <tr><td><strong>PM-KISAN</strong></td><td>₹6000/year</td><td><a href="https://pmkisan.gov.in" target="_blank">pmkisan.gov.in</a></td></tr>
+        <tr><td><strong>KCC Loan</strong></td><td>Up to ₹3L @4-7%</td><td>Any Bank</td></tr>
+        <tr><td><strong>SMAM</strong></td><td>40-50% subsidy</td><td>Agriculture Dept</td></tr></tbody></table>`;
+        }
+
+        // User Authentication
+        function initUserData() {
+            const stored = localStorage.getItem('kisan_users');
+            if (stored) users = JSON.parse(stored);
+            else { users = [{ id: 1, name: "Admin", email: "admin@kisan.com", mobile: "9999999999", location: "Delhi", password: "admin123", role: "admin", registeredOn: new Date().toISOString() }]; localStorage.setItem('kisan_users', JSON.stringify(users)); }
+        }
+        function saveUsers() { localStorage.setItem('kisan_users', JSON.stringify(users)); }
+        function checkLogin() {
+            const saved = sessionStorage.getItem('kisan_current_user');
+            if (saved) {
+                currentUser = JSON.parse(saved);
+                document.getElementById('authModal').classList.remove('active');
+                document.getElementById('mainContent').classList.add('active');
+                document.getElementById('userNameDisplay').innerText = currentUser.name;
+                if (currentUser.role === 'admin') { document.getElementById('adminBtn').style.display = 'block'; document.getElementById('userRoleBadge').innerText = 'Admin'; document.getElementById('userRoleBadge').style.background = '#2563eb'; }
+                return true;
+            } else { document.getElementById('authModal').classList.add('active'); document.getElementById('mainContent').classList.remove('active'); return false; }
+        }
+        function handleLogin() { const email = document.getElementById('loginEmail').value, pwd = document.getElementById('loginPassword').value; const user = users.find(u => (u.email === email || u.mobile === email) && u.password === pwd); if (user) { currentUser = user; sessionStorage.setItem('kisan_current_user', JSON.stringify(user)); checkLogin(); alert(`Welcome ${user.name}!`); } else alert('Invalid credentials!'); }
+        function handleRegister() { const name = document.getElementById('regName').value, email = document.getElementById('regEmail').value, mobile = document.getElementById('regMobile').value, location = document.getElementById('regLocation').value, pwd = document.getElementById('regPassword').value; if (!name || !email || !mobile || !location || !pwd) return alert('Fill all fields!'); if (pwd.length < 6) return alert('Password min 6 chars!'); if (users.find(u => u.email === email)) return alert('Email exists!'); users.push({ id: users.length + 1, name, email, mobile, location, password: pwd, role: 'farmer', registeredOn: new Date().toISOString() }); saveUsers(); alert('Registered! Please login.'); showLogin(); }
+        function showRegister() { document.getElementById('loginForm').style.display = 'none'; document.getElementById('registerForm').style.display = 'block'; }
+        function showLogin() { document.getElementById('loginForm').style.display = 'block'; document.getElementById('registerForm').style.display = 'none'; }
+        function logout() { sessionStorage.removeItem('kisan_current_user'); currentUser = null; checkLogin(); }
+        function showAdminPanel() { if (currentUser?.role === 'admin') { document.getElementById('adminPanelSection').style.display = 'block'; document.getElementById('farmerContent').style.display = 'none'; const farmers = users.filter(u => u.role === 'farmer').length; document.getElementById('adminStats').innerHTML = `<div class="stat-card"><h3>${users.length}</h3><p>Total</p></div><div class="stat-card"><h3>${farmers}</h3><p>Farmers</p></div>`; const tbody = document.getElementById('userTableBody'); tbody.innerHTML = ''; users.forEach(user => { if (user.role !== 'admin') { const row = tbody.insertRow(); row.insertCell(0).innerText = user.id; row.insertCell(1).innerText = user.name; row.insertCell(2).innerText = user.email; row.insertCell(3).innerText = user.mobile; row.insertCell(4).innerText = user.location; const btn = document.createElement('button'); btn.innerText = 'Delete'; btn.className = 'delete-user'; btn.onclick = () => { users = users.filter(u => u.id !== user.id); saveUsers(); showAdminPanel(); }; row.insertCell(5).appendChild(btn); } }); } }
+
+        function showMainTab(tab) {
+            currentMainTab = tab;
+            document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('cropsSection').style.display = tab === 'crops' ? 'block' : 'none';
+            document.getElementById('equipmentSection').style.display = tab === 'equipment' ? 'block' : 'none';
+            document.getElementById('schemesSection').style.display = tab === 'schemes' ? 'block' : 'none';
+            if (tab === 'schemes') showSchemes();
+        }
+
+        function getAnswer() {
+            let q = document.getElementById('userQuestion').value.toLowerCase();
+            if (q.includes('jcb')) showAnswer('jcb');
+            else if (q.includes('tractor')) showAnswer('tractor');
+            else if (q.includes('rabi')) showAnswer('rabi');
+            else if (q.includes('kharif')) showAnswer('kharif');
+            else if (q.includes('summer')) showAnswer('summer');
+            else if (q.includes('pm') || q.includes('kisan')) showAnswer('scheme_guide');
+            else if (q.includes('kcc') || q.includes('loan')) showAnswer('loan_guide');
+            else if (q.includes('mandi') || q.includes('price')) showAnswer('mandi_guide');
+            else showAnswer('crop_guide');
+        }
+
+        function clearAll() { document.getElementById('userQuestion').value = ''; document.getElementById('userLocation').value = ''; document.getElementById('answerBox').innerHTML = '💡 Click on ANY crop, season, equipment, or card above - answer appears instantly!'; }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            const t = translations[lang];
+            // Update all UI elements
+            for (let key in t) {
+                if (document.getElementById(key)) document.getElementById(key).innerText = t[key];
+                else if (document.getElementById(key + 'Name')) document.getElementById(key + 'Name').innerText = t[key];
+            }
+            document.getElementById('welcomeTitle').innerText = t.welcomeTitle;
+            document.getElementById('welcomeSubtitle').innerText = t.welcomeSubtitle;
+            document.getElementById('emailLabel').innerText = t.emailLabel;
+            document.getElementById('passwordLabel').innerText = t.passwordLabel;
+            document.getElementById('loginBtnText').innerText = t.loginBtnText;
+            document.getElementById('registerBtnText').innerText = t.registerBtnText;
+            document.getElementById('adminPanelText').innerText = t.adminPanelText;
+            document.getElementById('logoutText').innerText = t.logoutText;
+            document.getElementById('appTitle').innerHTML = t.appTitle;
+            document.getElementById('appSubtitle').innerText = t.appSubtitle;
+            document.getElementById('tabCrops').innerText = t.tabCrops;
+            document.getElementById('tabEquip').innerText = t.tabEquip;
+            document.getElementById('tabSchemes').innerText = t.tabSchemes;
+            document.getElementById('cardCrop').innerText = t.cardCrop;
+            document.getElementById('cardCropSub').innerText = t.cardCropSub;
+            document.getElementById('cardEquip').innerText = t.cardEquip;
+            document.getElementById('cardEquipSub').innerText = t.cardEquipSub;
+            document.getElementById('cardScheme').innerText = t.cardScheme;
+            document.getElementById('cardSchemeSub').innerText = t.cardSchemeSub;
+            document.getElementById('cardLoan').innerText = t.cardLoan;
+            document.getElementById('cardLoanSub').innerText = t.cardLoanSub;
+            document.getElementById('cardMandi').innerText = t.cardMandi;
+            document.getElementById('cardMandiSub').innerText = t.cardMandiSub;
+            document.getElementById('askTitle').innerText = t.askTitle;
+            document.getElementById('getAnswerBtn').innerText = t.getAnswerBtn;
+            document.getElementById('clearBtn').innerText = t.clearBtn;
+            document.getElementById('rabiName').innerText = t.rabiName;
+            document.getElementById('rabiMonths').innerText = t.rabiMonths;
+            document.getElementById('kharifName').innerText = t.kharifName;
+            document.getElementById('kharifMonths').innerText = t.kharifMonths;
+            document.getElementById('zaidName').innerText = t.zaidName;
+            document.getElementById('zaidMonths').innerText = t.zaidMonths;
+            document.getElementById('summerName').innerText = t.summerName;
+            document.getElementById('summerMonths').innerText = t.summerMonths;
+            document.getElementById('cropsPanelTitle').innerHTML = t.cropsPanelTitle;
+            document.getElementById('equipPanelTitle').innerHTML = t.equipPanelTitle;
+            document.getElementById('schemesPanelTitle').innerHTML = t.schemesPanelTitle;
+            document.getElementById('mandiTitle').innerHTML = t.mandiTitle;
+            document.getElementById('mandiCrop').innerText = t.mandiCrop;
+            document.getElementById('mandiState').innerText = t.mandiState;
+            document.getElementById('mandiPrice').innerText = t.mandiPrice;
+            document.getElementById('wheatName').innerText = t.wheatName;
+            document.getElementById('paddyName').innerText = t.paddyName;
+            document.getElementById('maizeName').innerText = t.maizeName;
+            document.getElementById('directLinksTitle').innerText = t.directLinksTitle;
+            document.getElementById('equipTractor').innerHTML = t.equipTractor;
+            document.getElementById('equipJCB').innerHTML = t.equipJCB;
+            document.getElementById('equipHarvester').innerHTML = t.equipHarvester;
+
+            // Update chips
+            let chipsHtml = '';
+            for (let i = 0; i < t.chips.length; i++) {
+                const answerKey = ['jcb', 'tractor', 'summer', 'scheme_guide', 'loan_guide', 'mandi_guide'][i];
+                chipsHtml += `<div class="chip" onclick="showAnswer('${answerKey}'); document.getElementById('userQuestion').value='${t.chips[i]}';">${t.chips[i]}</div>`;
+            }
+            document.getElementById('questionChips').innerHTML = chipsHtml;
+
+            // Update displayed content
+            displaySeasonCrops();
+            displayEquipment();
+            showSchemes();
+        }
+
+        createFallingItems();
+        initUserData();
+        checkLogin();
+        displaySeasonCrops();
+        displayEquipment();
+        showSchemes();
+        setLanguage('en');
+    </script>
+</body>
+
+</html>
