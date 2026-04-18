@@ -1,17 +1,29 @@
 # Kisan Saathi
 
-Kisan Saathi is a single-file web portal for farmers that provides crop guidance, equipment details, scheme information, mandi prices, and a simple login and admin system in one `index.html` file.
+Kisan Saathi is a browser-based farmer assistance portal built as a single-page app in `index.html`. It brings together crop-season guidance, equipment information, government scheme details, mandi pricing, multilingual content, and a lightweight farmer/admin login flow in one place.
 
-## Features
+## Highlights
 
-- Multi-language interface with English, Hindi, Kannada, and Tamil options
-- Farmer login and registration using browser storage
-- Admin dashboard to view and manage registered users
-- Seasonal crop guidance for Rabi, Kharif, Zaid, and Summer
-- Farm equipment details for tractors, JCBs, and harvesters
-- Government scheme and agricultural loan information
-- Quick answer cards and question chips for common farmer queries
-- Basic mandi price display and useful agriculture links
+- Supports English, Hindi, Kannada, and Tamil
+- Includes farmer registration and login using browser storage
+- Provides an admin dashboard for viewing registered users
+- Shows crop guidance across Rabi, Kharif, Zaid, and Summer seasons
+- Covers tractors, JCBs, and harvesters with price and rental details
+- Includes quick answers for common questions on crops, loans, schemes, and mandi rates
+- Uses a single-file setup, making it easy to open and test locally
+
+## Demo Flow
+
+1. Open `index.html` in a browser.
+2. Log in with the default admin account or register as a new farmer.
+3. Explore crop seasons, equipment details, schemes, and quick answers.
+4. Switch languages using the header controls.
+
+## Default Admin Account
+
+- Email: `admin@kisan.com`
+- Mobile: `9999999999`
+- Password: `admin123`
 
 ## Project Structure
 
@@ -21,37 +33,40 @@ Kisan Saathi is a single-file web portal for farmers that provides crop guidance
 |-- README.md
 ```
 
-## How To Run
+## Tech Stack
 
-1. Open `index.html` in any modern web browser.
-2. Register as a new user or log in with the admin account.
+- HTML5
+- CSS3
+- Vanilla JavaScript
+- `localStorage` for user persistence
+- `sessionStorage` for login session handling
+- Font Awesome
+- Google Fonts
 
-## Default Admin Login
+## Current Behavior
 
-- Email: `admin@kisan.com`
-- Mobile: `9999999999`
-- Password: `admin123`
+- Data is stored in the browser only
+- No backend, API, or database is connected
+- The app can run by directly opening the HTML file
+- The project is best suited for demos, prototypes, and learning
 
-## Tech Used
+## Known Limitations
 
-- HTML
-- CSS
-- JavaScript
-- `localStorage` and `sessionStorage` for client-side data
-- Font Awesome for icons
-- Google Fonts for typography
+- Authentication is client-side only and not secure for production
+- Some multilingual text in `index.html` appears to have encoding issues
+- Market prices and scheme data are currently static
+- HTML, CSS, and JavaScript are bundled into one file
 
-## Notes
+## Next Improvements
 
-- This project stores user data in the browser only.
-- No backend or database is connected.
-- The app is best suited for demo, prototype, or learning purposes.
+- Split the app into separate HTML, CSS, and JavaScript files
+- Fix text encoding for non-English content
+- Add better form validation and user feedback
+- Connect live agriculture, mandi, and scheme APIs
+- Replace browser-only auth with a proper backend
+- Improve responsive behavior and accessibility polish
 
-## Future Improvements
+## Run Locally
 
-- Add a backend for secure authentication and real user management
-- Connect live mandi prices and scheme APIs
-- Improve form validation and error handling
-- Separate HTML, CSS, and JavaScript into dedicated files
-- Fix text encoding issues for some non-English content
+Open `index.html` in any modern browser such as Chrome, Edge, or Firefox.
 
