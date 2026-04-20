@@ -70,3 +70,6 @@ Kisan Saathi is a browser-based farmer assistance portal built as a single-page 
 
 Open `index.html` in any modern browser such as Chrome, Edge, or Firefox.
 
+## Vercel kink
+https://kishannn.vercel.app/
+
